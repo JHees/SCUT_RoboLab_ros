@@ -34,12 +34,24 @@ main()
     {
         rRect.push_back(cv::minAreaRect(i));
     }
+
+    for (auto &i : rRect)
+    {
+        if (i.size.width < i.size.height)
+        {
+            i.angle += 90;
+            int buf = i.size.width;
+            i.size.width = i.size.height;
+            i.size.height = buf;
+        }
+        i.angle+=i.angle<0?180:0;
+    }
     for(size_t i=0;i<rRect.size();++i)
     {
-        if(!(rRect[i].size.height/rRect[i].size.width>3||rRect[i].size.width/rRect[i].size.height>3))
+        if(rRect[i].size.width/rRect[i].size.height<3.2||(rRect[i].angle<40||rRect[i].angle>140))
         {
             rRect.erase(rRect.begin()+i);
-           // --i;
+           --i;
         }
     }
 
@@ -52,7 +64,7 @@ main()
         i.points(vertices);
         for (int j = 0; j < 4; j++)
         {			
-            line(frame, vertices[j], vertices[(j + 1) % 4], cv::Scalar(179, 245, 222), 1);
+            line(frame, vertices[j], vertices[(j + 1) % 4], cv::Scalar(255, 0, 0), 2);
         }
     }
         imshow("frame",frame);
